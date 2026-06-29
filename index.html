@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para alguém especial...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffdde1 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            max-width: 400px;
+            width: 90%;
+            z-index: 10;
+            transition: all 0.5s ease;
+        }
+
+        h1 {
+            color: #d63384;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+            height: 50px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        #btn-sim {
+            background-color: #28a745;
+            color: white;
+        }
+
+        #btn-sim:hover {
+            transform: scale(1.1);
+        }
+
+        #btn-nao {
+            background-color: #dc3545;
+            color: white;
+            position: absolute;
+        }
+
+        .sucesso {
+            display: none;
+        }
+
+        .sucesso h2 {
+            color: #d63384;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .sucesso p {
+            color: #555;
+            font-size: 1.1rem;
+        }
+
+        .coracao {
+            position: absolute;
+            color: #ff4d6d;
+            font-size: 24px;
+            animation: subir 3s linear infinite;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        @keyframes subir {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1.5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="painel">
+        <!-- Tela Inicial -->
+        <div id="tela-pergunta">
+            <!-- COLOQUE SUA PERGUNTA AQUI -->
+            <h1>Quer sair comigo neste fim de semana? 🌹</h1>
+            <div class="buttons">
+                <button id="btn-sim" onclick="aceitou()">Sim!</button>
+                <button id="btn-nao" onmouseover="fuga()" onclick="fuga()">Não</button>
+            </div>
+        </div>
+
+        <!-- Tela de Sucesso -->
+        <div id="tela-sucesso" class="sucesso">
+            <h2>Ebaaa! ❤️</h2>
+            <!-- COLOQUE SUA MENSAGEM FOFA AQUI -->
+            <p>Você acabou de fazer o meu dia muito mais feliz. Já vou preparar tudo para o nosso encontro!</p>
+        </div>
+    </div>
+
+    <script>
+        const btnNao = document.getElementById('btn-nao');
+        const telaPergunta = document.getElementById('tela-pergunta');
+        const telaSucesso = document.getElementById('tela-sucesso');
+
+        // Função que faz o botão Não fugir
+        function fuga() {
+            // Calcula posições aleatórias dentro da tela, respeitando margens
+            const larguraJanela = window.innerWidth - 100;
+            const alturaJanela = window.innerHeight - 50;
+
+            const novoX = Math.random() * larguraJanela;
+            const novoY = Math.random() * alturaJanela;
+
+            // Retira o botão do fluxo fixo do container e move pela tela toda
+            btnNao.style.position = 'fixed';
+            btnNao.style.left = novoX + 'px';
+            btnNao.style.top = novoY + 'px';
+        }
+
+        // Função quando o Sim é clicado
+        function aceitou() {
+            telaPergunta.style.display = 'none';
+            telaSucesso.style.display = 'block';
+            
+            // Inicia a chuva de corações
+            setInterval(criarCoracao, 150);
+        }
+
+        // Função para gerar corações na tela
+        function criarCoracao() {
+            const coracao = document.createElement('div');
+            coracao.classList.add('coracao');
+            coracao.innerHTML = '❤️';
+            
+            // Posição horizontal aleatória
+            coracao.style.left = Math.random() * 100 + 'vw';
+            // Tamanho aleatório
+            coracao.style.fontSize = Math.random() * 20 + 15 + 'px';
+            // Duração da animação aleatória para dar efeito natural
+            coracao.style.animationDuration = Math.random() * 2 + 2 + 's';
+            
+            document.body.appendChild(coracao);
+
+            // Remove o elemento após a animação acabar
+            setTimeout(() => {
+                coracao.remove();
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
