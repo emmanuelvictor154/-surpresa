@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Para alguém especial...</title>
+    <title>Um plano para nós...</title>
     <style>
         body {
             margin: 0;
@@ -19,21 +19,42 @@
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.9);
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
-            max-width: 400px;
+            max-width: 450px;
             width: 90%;
             z-index: 10;
-            transition: all 0.5s ease;
         }
 
         h1 {
             color: #d63384;
             font-size: 1.8rem;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+        }
+
+        /* Estilo da Roleta */
+        .roleta-box {
+            background: #fff;
+            border: 3px dashed #ff4d6d;
+            border-radius: 15px;
+            padding: 20px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #333;
+            margin: 25px 0;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .sorteado {
+            color: #ff4d6d;
+            transform: scale(1.1);
         }
 
         .buttons {
@@ -42,6 +63,7 @@
             gap: 20px;
             position: relative;
             height: 50px;
+            margin-top: 20px;
         }
 
         button {
@@ -52,6 +74,16 @@
             border-radius: 10px;
             cursor: pointer;
             transition: transform 0.2s;
+        }
+
+        .btn-principal {
+            background-color: #d63384;
+            color: white;
+            box-shadow: 0 4px 15px rgba(214, 51, 132, 0.3);
+        }
+
+        .btn-principal:hover {
+            transform: scale(1.05);
         }
 
         #btn-sim {
@@ -69,8 +101,8 @@
             position: absolute;
         }
 
-        .sucesso {
-            display: none;
+        .escondido {
+            display: none !important;
         }
 
         .sucesso h2 {
@@ -82,6 +114,7 @@
         .sucesso p {
             color: #555;
             font-size: 1.1rem;
+            line-height: 1.6;
         }
 
         .coracao {
@@ -107,73 +140,113 @@
 </head>
 <body>
 
-    <div class="container" id="painel">
-        <!-- Tela Inicial -->
-        <div id="tela-pergunta">
-            <!-- COLOQUE SUA PERGUNTA AQUI -->
-            <h1>Quer sair comigo neste fim de semana? 🌹</h1>
-            <div class="buttons">
-                <button id="btn-sim" onclick="aceitou()">Sim!</button>
-                <button id="btn-nao" onmouseover="fuga()" onclick="fuga()">Não</button>
+    <div class="container">
+        <!-- Tela do Jogo -->
+        <div id="tela-jogo">
+            <h1>Vamos decidir nosso fim de semana? 🎲</h1>
+            
+            <div class="roleta-box" id="roleta">
+                ❓ Clique no botão para sortear
+            </div>
+
+            <!-- Botão Inicial para Girar -->
+            <button class="btn-principal" id="btn-girar" onclick="girarRoleta()">Descobrir nosso destino ✨</button>
+
+            <!-- Botões de Decisão (Iniciam escondidos) -->
+            <div class="buttons escondido" id="bloco-decisao">
+                <button id="btn-sim" onclick="aceitou()">Fechado! 🤝</button>
+                <button id="btn-nao" onmouseover="fuga()" onclick="fuga()">Não gostei</button>
             </div>
         </div>
 
         <!-- Tela de Sucesso -->
-        <div id="tela-sucesso" class="sucesso">
-            <h2>Ebaaa! ❤️</h2>
-            <!-- COLOQUE SUA MENSAGEM FOFA AQUI -->
-            <p>Você acabou de fazer o meu dia muito mais feliz. Já vou preparar tudo para o nosso encontro!</p>
+        <div id="tela-sucesso" class="escondido sucesso">
+            <h2>Ebaaa! Plano perfeito! ❤️</h2>
+            <p id="mensagem-final"></p>
         </div>
     </div>
 
     <script>
-        const btnNao = document.getElementById('btn-nao');
-        const telaPergunta = document.getElementById('tela-pergunta');
-        const telaSucesso = document.getElementById('tela-sucesso');
+        // Lista com as 6 opções românticas e divertidas
+        const opcoes = [
+            "🍕 Rodízio de Pizza + Conversar fiado",
+            "🍦 Cinema + Sorvete no final da tarde",
+            "🍔 Hambúrguer artesanal (por minha conta!)",
+            "🍿 Maratona de filmes + Pipoca embaixo das cobertas",
+            "🌅 Ver o pôr do sol + Comer um açaí gelado",
+            "☕ Ir naquele café fofo que você sempre quis ir"
+        ];
 
-        // Função que faz o botão Não fugir
+        const roleta = document.getElementById('roleta');
+        const btnGirar = document.getElementById('btn-girar');
+        const blocoDecisao = document.getElementById('bloco-decisao');
+        const btnNao = document.getElementById('btn-nao');
+        const telaJogo = document.getElementById('tela-jogo');
+        const telaSucesso = document.getElementById('tela-sucesso');
+        const mensagemFinal = document.getElementById('mensagem-final');
+
+        let opcaoSelecionada = "";
+
+        function girarRoleta() {
+            btnGirar.disabled = true;
+            let voltas = 0;
+            
+            // Efeito visual de rotação rápida
+            const intervalo = setInterval(() => {
+                const indiceAleatorio = Math.floor(Math.random() * opcoes.length);
+                roleta.innerText = opcoes[indiceAleatorio];
+                voltas++;
+
+                // Para a roleta após rodar o suficiente
+                if (voltas > 15) {
+                    clearInterval(intervalo);
+                    
+                    // Define o resultado final real
+                    const indiceFinal = Math.floor(Math.random() * opcoes.length);
+                    opcaoSelecionada = opcoes[indiceFinal];
+                    
+                    roleta.innerText = opcaoSelecionada;
+                    roleta.classList.add('sorteado');
+                    
+                    // Esconde o botão de girar e mostra o Sim/Não
+                    btnGirar.classList.add('escondido');
+                    blocoDecisao.classList.remove('escondido');
+                }
+            }, 100);
+        }
+
         function fuga() {
-            // Calcula posições aleatórias dentro da tela, respeitando margens
-            const larguraJanela = window.innerWidth - 100;
-            const alturaJanela = window.innerHeight - 50;
+            const larguraJanela = window.innerWidth - 120;
+            const alturaJanela = window.innerHeight - 60;
 
             const novoX = Math.random() * larguraJanela;
             const novoY = Math.random() * alturaJanela;
 
-            // Retira o botão do fluxo fixo do container e move pela tela toda
             btnNao.style.position = 'fixed';
             btnNao.style.left = novoX + 'px';
             btnNao.style.top = novoY + 'px';
         }
 
-        // Função quando o Sim é clicado
         function aceitou() {
-            telaPergunta.style.display = 'none';
-            telaSucesso.style.display = 'block';
+            telaJogo.classList.add('escondido');
+            telaSucesso.classList.remove('escondido');
             
-            // Inicia a chuva de corações
+            // Personaliza a mensagem final com o que foi sorteado
+            mensagemFinal.innerHTML = `Você acabou de fazer o meu dia muito mais feliz!<br><br>O combinado está de pé: <strong>${opcaoSelecionada}</strong>. Já vou deixar tudo organizado! 🥰`;
+            
             setInterval(criarCoracao, 150);
         }
 
-        // Função para gerar corações na tela
         function criarCoracao() {
             const coracao = document.createElement('div');
             coracao.classList.add('coracao');
             coracao.innerHTML = '❤️';
-            
-            // Posição horizontal aleatória
             coracao.style.left = Math.random() * 100 + 'vw';
-            // Tamanho aleatório
             coracao.style.fontSize = Math.random() * 20 + 15 + 'px';
-            // Duração da animação aleatória para dar efeito natural
             coracao.style.animationDuration = Math.random() * 2 + 2 + 's';
-            
             document.body.appendChild(coracao);
 
-            // Remove o elemento após a animação acabar
-            setTimeout(() => {
-                coracao.remove();
-            }, 4000);
+            setTimeout(() => { coracao.remove(); }, 4000);
         }
     </script>
 </body>
